@@ -17,9 +17,9 @@ func printHelp() {
 	fmt.Println("This CLI provides some basic commands to modify files in the current context.")
 	fmt.Println("")
 	fmt.Println("Following commands are available:")
-	fmt.Println("   copyTo <filename>   copies data from stdin to the given filename. When EOF is received the process is stopped.")
-	fmt.Println("   mkdir <name>        create a new directory with all sub directories")
-	fmt.Println("   help                displayes this message")
+	fmt.Println("   copyTo <filename> [data]	copies data from the data argument or stdin to the given filename. When EOF is received the process is stopped.")
+	fmt.Println("   mkdir <name>        		create a new directory with all sub directories")
+	fmt.Println("   help                		displayes this message")
 	fmt.Println("")
 }
 
@@ -30,17 +30,21 @@ func copy(args []string) {
 		os.Exit(2)
 	}
 	f, err := os.Create(args[0])
-	r := bufio.NewReader(os.Stdin)
-	w := bufio.NewWriter(f)
 	check(err)
 	defer f.Close()
-
-	for {
-		b, err := r.ReadByte()
-		if err == io.EOF {
-			return
+	w := bufio.NewWriter(f)
+	if len(args) == 1 {
+		r := bufio.NewReader(os.Stdin)
+		for {
+			b, err := r.ReadByte()
+			if err == io.EOF {
+				return
+			}
+			w.WriteByte(b)
+			w.Flush()
 		}
-		w.WriteByte(b)
+	} else {
+		w.WriteString(args[1])
 		w.Flush()
 	}
 }
