@@ -17,8 +17,9 @@ func printHelp() {
 	fmt.Println("This CLI provides some basic commands to modify files in the current context.")
 	fmt.Println("")
 	fmt.Println("Following commands are available:")
-	fmt.Println("   copyTo <filename>  copies data from stdin to the given filename. When EOF is received the process is stopped.")
-	fmt.Println("   help               displayes this message")
+	fmt.Println("   copyTo <filename>   copies data from stdin to the given filename. When EOF is received the process is stopped.")
+	fmt.Println("   mkdir <name>        create a new directory with all sub directories")
+	fmt.Println("   help                displayes this message")
 	fmt.Println("")
 }
 
@@ -44,6 +45,16 @@ func copy(args []string) {
 	}
 }
 
+func mkdir(args []string) {
+	if len(args) != 1 {
+		fmt.Println("ERROR: Exactly one directory name is needed")
+		printHelp()
+		os.Exit(2)
+	}
+	err := os.MkdirAll(args[0], os.ModePerm)
+	check(err)
+}
+
 func main() {
 	args := os.Args[1:]
 	if len(args) < 1 {
@@ -55,6 +66,9 @@ func main() {
 	switch cmd {
 	case "copyTo":
 		copy(args[1:])
+		break
+	case "mkdir":
+		mkdir(args[1:])
 		break
 	case "help":
 		printHelp()
